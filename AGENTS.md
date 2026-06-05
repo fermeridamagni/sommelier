@@ -26,7 +26,3 @@ packages/
 - [Ultracite Code Standards](ULTRACITE.md).
 
 ---
-
-### Project Info
-
-- This is a project by [Magni Development](https://magni.dev)
