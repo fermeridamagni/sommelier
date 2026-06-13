@@ -1,0 +1,503 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04844BE85382EEAE0D0C7BA2 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B96C724BD952CBF52CCB4E /* LoginView.swift */; };
+		0B940B2B4992FEBA6F5C0232 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76E6B930C749BEB71EEF629 /* AuthManager.swift */; };
+		0C9FF7ACC4FD06E3917408FE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23F90D4F6774325CCB3DFEC /* Platform.swift */; };
+		0D8CB5A15782F267E5718B45 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C7498AEB6F8987D8363B12 /* SettingsView.swift */; };
+		116F858A834FCAED5AD25D62 /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56A0AC3728A3BB6AC5F8D57 /* GameCardView.swift */; };
+		197ADEA87080B7C79B8E2F18 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4D63D1C355BD406CCAF0F5 /* HomeView.swift */; };
+		25BBEAE39C6F979BE8F172D6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42A2B785D34119F8C4D21D1 /* LibraryView.swift */; };
+		2C92A3ED57E940CE5106C138 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D78999164BE6B41B6DDD73 /* AppSettings.swift */; };
+		3A4AD76A641A9A83FE8EA042 /* PlatformIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FC69E26BC3DA8855ED33C /* PlatformIcon.swift */; };
+		410F40D175C7F858D92BF5BC /* GameDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D683D7E6067C98E31A907A36 /* GameDetailView.swift */; };
+		4491AACBC48A06E2C717BF0D /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAF4DC1268B32159BBC000B /* MainView.swift */; };
+		50EA5B827EEEA50D406E6AC6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9219B519149DD54B77AD4AD /* OnboardingView.swift */; };
+		5709A1758FB2D134166CB265 /* LibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A781EA2119354894E8E9663D /* LibraryManager.swift */; };
+		60FFBECFD6732F8F89D78180 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */; };
+		80BEE3005E2D6CAC29457233 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BCB73F46D1BF8D667432995 /* APIManager.swift */; };
+		8B14FB369513015E46D22D0C /* ProcessRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */; };
+		95531D3DBAB6F5DA2347CC19 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDECBAB21080D149FCF6FB4 /* LibraryViewModel.swift */; };
+		AA2098DAA47FC5F7F997D49B /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB7E6C1C9CE18378ACFD60AC /* HomeViewModel.swift */; };
+		C9EFA2EC7EBA165B7047A867 /* Bottle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A9CA85E26F46911205D0B /* Bottle.swift */; };
+		D77F754220F81E6F60746165 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD75BDD87C88C6340DAA8C5 /* OnboardingViewModel.swift */; };
+		E06625A4C6C0557D0B0D02D7 /* WineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */; };
+		E612DE452FD2BD4C9E1C9D0D /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480C1A96169CAA617D09A80C /* SidebarView.swift */; };
+		EDB80BBA85C08587C7DA6705 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589F2111002C800807131D68 /* Game.swift */; };
+		F2C291397EC1F45837675F11 /* StatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAD844C586331059D3773B5 /* StatusBadge.swift */; };
+		F50428B4B87F8E1F49BFE868 /* SommelierApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7744EB66327760FE945FD4E3 /* SommelierApp.swift */; };
+		F7913E3DAB161D809EDA917A /* GameDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CE9FB13E7CAC7898DF9FED /* GameDetailViewModel.swift */; };
+		F7967D64E1F7CEFE76158373 /* SystemInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */; };
+		F857F66D19B326A7AB066A14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120EBB0EB6C8F699919A6DA4 /* Assets.xcassets */; };
+		FF3AE787D1037B1064F496C0 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91AC3519F078E30257DC027 /* AuthViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0C337D0E8994B578BFEE8B06 /* Sommelier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sommelier.entitlements; sourceTree = "<group>"; };
+		120EBB0EB6C8F699919A6DA4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		135FC69E26BC3DA8855ED33C /* PlatformIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformIcon.swift; sourceTree = "<group>"; };
+		13CE9FB13E7CAC7898DF9FED /* GameDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailViewModel.swift; sourceTree = "<group>"; };
+		18B96C724BD952CBF52CCB4E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfoService.swift; sourceTree = "<group>"; };
+		33D78999164BE6B41B6DDD73 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		480C1A96169CAA617D09A80C /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		4AAD844C586331059D3773B5 /* StatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadge.swift; sourceTree = "<group>"; };
+		589F2111002C800807131D68 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		5BCB73F46D1BF8D667432995 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		5C4D63D1C355BD406CCAF0F5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRunner.swift; sourceTree = "<group>"; };
+		7744EB66327760FE945FD4E3 /* SommelierApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SommelierApp.swift; sourceTree = "<group>"; };
+		7AC78A21F2B2861669CFC5C2 /* Sommelier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sommelier.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		8D4A9CA85E26F46911205D0B /* Bottle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bottle.swift; sourceTree = "<group>"; };
+		8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WineManager.swift; sourceTree = "<group>"; };
+		92C7498AEB6F8987D8363B12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A23F90D4F6774325CCB3DFEC /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
+		A76E6B930C749BEB71EEF629 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		A781EA2119354894E8E9663D /* LibraryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManager.swift; sourceTree = "<group>"; };
+		A9219B519149DD54B77AD4AD /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		AEAF4DC1268B32159BBC000B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		AFDECBAB21080D149FCF6FB4 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		B91AC3519F078E30257DC027 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		D683D7E6067C98E31A907A36 /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
+		E42A2B785D34119F8C4D21D1 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		E56A0AC3728A3BB6AC5F8D57 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
+		EAD75BDD87C88C6340DAA8C5 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		F053F7209DC144FE21DA0F4E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FB7E6C1C9CE18378ACFD60AC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0221DCDFC1FB6B6D288E5495 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5BCB73F46D1BF8D667432995 /* APIManager.swift */,
+				A76E6B930C749BEB71EEF629 /* AuthManager.swift */,
+				89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */,
+				A781EA2119354894E8E9663D /* LibraryManager.swift */,
+				63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */,
+				1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */,
+				8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		07362383D511EFBB09C4D668 = {
+			isa = PBXGroup;
+			children = (
+				8FF3F1A3FF4A7ECC71AC2D3C /* Sommelier */,
+				8B3482D42C3E82358836D7AD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E13616A3A57BCFC9357C139 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B91AC3519F078E30257DC027 /* AuthViewModel.swift */,
+				13CE9FB13E7CAC7898DF9FED /* GameDetailViewModel.swift */,
+				FB7E6C1C9CE18378ACFD60AC /* HomeViewModel.swift */,
+				AFDECBAB21080D149FCF6FB4 /* LibraryViewModel.swift */,
+				EAD75BDD87C88C6340DAA8C5 /* OnboardingViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		74F48AAD40DFDC3F85461493 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				92C7498AEB6F8987D8363B12 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		8B3482D42C3E82358836D7AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7AC78A21F2B2861669CFC5C2 /* Sommelier.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8FF3F1A3FF4A7ECC71AC2D3C /* Sommelier */ = {
+			isa = PBXGroup;
+			children = (
+				120EBB0EB6C8F699919A6DA4 /* Assets.xcassets */,
+				F053F7209DC144FE21DA0F4E /* Info.plist */,
+				0C337D0E8994B578BFEE8B06 /* Sommelier.entitlements */,
+				7744EB66327760FE945FD4E3 /* SommelierApp.swift */,
+				999C70CD5CAA9142289D5F26 /* Models */,
+				0221DCDFC1FB6B6D288E5495 /* Services */,
+				3E13616A3A57BCFC9357C139 /* ViewModels */,
+				9CB7A1F573E03BC2AD800A5A /* Views */,
+			);
+			path = Sommelier;
+			sourceTree = "<group>";
+		};
+		999C70CD5CAA9142289D5F26 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				33D78999164BE6B41B6DDD73 /* AppSettings.swift */,
+				8D4A9CA85E26F46911205D0B /* Bottle.swift */,
+				589F2111002C800807131D68 /* Game.swift */,
+				A23F90D4F6774325CCB3DFEC /* Platform.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9CB7A1F573E03BC2AD800A5A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AEAF4DC1268B32159BBC000B /* MainView.swift */,
+				B32B034BA3F67411AC78143C /* Auth */,
+				C8DF79969752A99992649B44 /* Components */,
+				BA842B1BD3A88B7D819B14F4 /* Home */,
+				A5733B1AEE5419F899B3328E /* Library */,
+				AAF8501292A9AD79405BEB36 /* Onboarding */,
+				74F48AAD40DFDC3F85461493 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A5733B1AEE5419F899B3328E /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				E56A0AC3728A3BB6AC5F8D57 /* GameCardView.swift */,
+				D683D7E6067C98E31A907A36 /* GameDetailView.swift */,
+				E42A2B785D34119F8C4D21D1 /* LibraryView.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		AAF8501292A9AD79405BEB36 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				A9219B519149DD54B77AD4AD /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		B32B034BA3F67411AC78143C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				18B96C724BD952CBF52CCB4E /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		BA842B1BD3A88B7D819B14F4 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				5C4D63D1C355BD406CCAF0F5 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		C8DF79969752A99992649B44 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				135FC69E26BC3DA8855ED33C /* PlatformIcon.swift */,
+				480C1A96169CAA617D09A80C /* SidebarView.swift */,
+				4AAD844C586331059D3773B5 /* StatusBadge.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		43C734F93C834107C06F4EFF /* Sommelier */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 993E46231CC2F3473576330E /* Build configuration list for PBXNativeTarget "Sommelier" */;
+			buildPhases = (
+				280C59665D9BE961D91C01F5 /* Sources */,
+				53F9CA4C3EC7A8B3195744C6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sommelier;
+			packageProductDependencies = (
+			);
+			productName = Sommelier;
+			productReference = 7AC78A21F2B2861669CFC5C2 /* Sommelier.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		346E4172F62DC097D5A1935E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					43C734F93C834107C06F4EFF = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9373875C49472F6A03F31F64 /* Build configuration list for PBXProject "Sommelier" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 07362383D511EFBB09C4D668;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8B3482D42C3E82358836D7AD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				43C734F93C834107C06F4EFF /* Sommelier */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		53F9CA4C3EC7A8B3195744C6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F857F66D19B326A7AB066A14 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		280C59665D9BE961D91C01F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				80BEE3005E2D6CAC29457233 /* APIManager.swift in Sources */,
+				2C92A3ED57E940CE5106C138 /* AppSettings.swift in Sources */,
+				0B940B2B4992FEBA6F5C0232 /* AuthManager.swift in Sources */,
+				FF3AE787D1037B1064F496C0 /* AuthViewModel.swift in Sources */,
+				C9EFA2EC7EBA165B7047A867 /* Bottle.swift in Sources */,
+				EDB80BBA85C08587C7DA6705 /* Game.swift in Sources */,
+				116F858A834FCAED5AD25D62 /* GameCardView.swift in Sources */,
+				410F40D175C7F858D92BF5BC /* GameDetailView.swift in Sources */,
+				F7913E3DAB161D809EDA917A /* GameDetailViewModel.swift in Sources */,
+				197ADEA87080B7C79B8E2F18 /* HomeView.swift in Sources */,
+				AA2098DAA47FC5F7F997D49B /* HomeViewModel.swift in Sources */,
+				60FFBECFD6732F8F89D78180 /* KeychainService.swift in Sources */,
+				5709A1758FB2D134166CB265 /* LibraryManager.swift in Sources */,
+				25BBEAE39C6F979BE8F172D6 /* LibraryView.swift in Sources */,
+				95531D3DBAB6F5DA2347CC19 /* LibraryViewModel.swift in Sources */,
+				04844BE85382EEAE0D0C7BA2 /* LoginView.swift in Sources */,
+				4491AACBC48A06E2C717BF0D /* MainView.swift in Sources */,
+				50EA5B827EEEA50D406E6AC6 /* OnboardingView.swift in Sources */,
+				D77F754220F81E6F60746165 /* OnboardingViewModel.swift in Sources */,
+				0C9FF7ACC4FD06E3917408FE /* Platform.swift in Sources */,
+				3A4AD76A641A9A83FE8EA042 /* PlatformIcon.swift in Sources */,
+				8B14FB369513015E46D22D0C /* ProcessRunner.swift in Sources */,
+				0D8CB5A15782F267E5718B45 /* SettingsView.swift in Sources */,
+				E612DE452FD2BD4C9E1C9D0D /* SidebarView.swift in Sources */,
+				F50428B4B87F8E1F49BFE868 /* SommelierApp.swift in Sources */,
+				F2C291397EC1F45837675F11 /* StatusBadge.swift in Sources */,
+				F7967D64E1F7CEFE76158373 /* SystemInfoService.swift in Sources */,
+				E06625A4C6C0557D0B0D02D7 /* WineManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AB55EDDA8ED8BDB44C99A172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = Sommelier;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		AB7989DF328EA39D54825025 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sommelier/Sommelier.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = Sommelier/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sommelier.app;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Debug;
+		};
+		C1D217E90FCE5E2F2CAB8077 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sommelier/Sommelier.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = Sommelier/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sommelier.app;
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Release;
+		};
+		FDBE7B657B1C788E32F1EA5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Sommelier;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9373875C49472F6A03F31F64 /* Build configuration list for PBXProject "Sommelier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FDBE7B657B1C788E32F1EA5A /* Debug */,
+				AB55EDDA8ED8BDB44C99A172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		993E46231CC2F3473576330E /* Build configuration list for PBXNativeTarget "Sommelier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB7989DF328EA39D54825025 /* Debug */,
+				C1D217E90FCE5E2F2CAB8077 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 346E4172F62DC097D5A1935E /* Project object */;
+}

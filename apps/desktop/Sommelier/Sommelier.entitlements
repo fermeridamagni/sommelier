@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- App Sandbox is DISABLED — required for Wine/GPTK process execution,
+	     arbitrary filesystem access for bottles, and launching external CLI tools
+	     (legendary, steamcmd, nile). Distribution via Developer ID, not Mac App Store. -->
+	<key>com.apple.security.app-sandbox</key>
+	<false/>
+	<!-- Allow outgoing network connections for API calls (SteamGridDB, Steam Web API)
+	     and CLI tool authentication flows (Epic, Amazon browser-based OAuth). -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>
