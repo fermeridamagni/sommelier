@@ -5,8 +5,12 @@ import SwiftUI
 /// Drives the game detail sheet — launching games, managing Wine bottles,
 /// and fetching artwork from external APIs.
 ///
-/// For native macOS games, `primaryAction()` launches the executable directly.
+/// For native macOS games, `primaryAction()` launches the executable directly
+/// via `ProcessMonitor`, which tracks the running app and reports when it exits.
 /// For Windows games, it creates or reuses a GPTK/Wine bottle before launching.
+///
+/// The stop button is enabled while a game is running, allowing the user to
+/// terminate the process gracefully (SIGTERM → 5s → SIGKILL fallback).
 @MainActor
 @Observable
 final class GameDetailViewModel {
@@ -26,15 +30,21 @@ final class GameDetailViewModel {
     /// Whether the confirm-delete dialog is showing.
     var showingDeleteConfirmation: Bool = false
 
+    /// The process monitor used to track game lifecycle.
+    private let processMonitor: ProcessMonitor
+
     // MARK: - Init
 
-    init(game: Game) {
+    init(game: Game, processMonitor: ProcessMonitor = .shared) {
         self.game = game
+        self.processMonitor = processMonitor
     }
 
     // MARK: - Computed Properties
 
     /// Label for the primary action button based on current game state.
+    ///
+    /// Shows "Stop" when running so the user can terminate the process.
     var primaryActionLabel: String {
         switch game.status {
         case .idle:
@@ -44,7 +54,7 @@ final class GameDetailViewModel {
         case .installing:
             return "Installing…"
         case .running:
-            return "Running…"
+            return "Stop"
         case .updating:
             return "Updating…"
         case .error:
@@ -53,6 +63,8 @@ final class GameDetailViewModel {
     }
 
     /// Color for the primary action button.
+    ///
+    /// Red when running (stop action), green for play, accent for install.
     var primaryActionColor: Color {
         switch game.status {
         case .idle:
@@ -60,16 +72,18 @@ final class GameDetailViewModel {
         case .downloading, .installing, .updating:
             return .blue
         case .running:
-            return .secondary
+            return .red
         case .error:
             return .red
         }
     }
 
     /// Whether the primary action button is interactive.
+    ///
+    /// Now also returns `true` when `.running` so the stop button is clickable.
     var canPerformPrimaryAction: Bool {
         switch game.status {
-        case .idle, .error: true
+        case .idle, .error, .running: true
         default: false
         }
     }
@@ -97,18 +111,37 @@ final class GameDetailViewModel {
 
     // MARK: - Methods
 
-    /// Executes the primary action: launch for installed games, install otherwise.
+    /// Executes the primary action based on game state.
     ///
-    /// Native macOS games are launched directly. Windows games go through
-    /// bottle creation/verification before launching via GPTK/Wine.
+    /// - **Idle + Installed** → Launch the game
+    /// - **Idle + Not Installed** → Install the game
+    /// - **Running** → Stop the game
+    /// - **Error** → Retry launch
     func primaryAction() {
         guard canPerformPrimaryAction else { return }
 
-        if game.isInstalled {
-            launchGame()
-        } else {
-            installGame()
+        switch game.status {
+        case .running:
+            stopGame()
+        case .idle, .error:
+            if game.isInstalled {
+                launchGame()
+            } else {
+                installGame()
+            }
+        default:
+            break
         }
+    }
+
+    /// Stops the currently running game process.
+    ///
+    /// Delegates to `ProcessMonitor.stopGame(gameID:)` which sends SIGTERM
+    /// with a 5-second SIGKILL fallback. The `onGameExited` callback will
+    /// reset the game status to idle.
+    func stopGame() {
+        launchProgress = "Stopping \(game.name)…"
+        processMonitor.stopGame(gameID: game.id)
     }
 
     /// Fetches high-quality artwork from SteamGridDB or platform APIs.
@@ -129,27 +162,64 @@ final class GameDetailViewModel {
 
     // MARK: - Private
 
-    /// Launches the game executable.
+    /// Launches the game executable using ProcessMonitor for lifecycle tracking.
+    ///
+    /// For native macOS apps, uses `NSWorkspace.openApplication` via ProcessMonitor.
+    /// For Windows games, prepares a Wine bottle then launches via GPTK.
+    /// Sets `lastPlayed` to now and status to `.running`.
     private func launchGame() {
         isLaunching = true
         launchProgress = "Starting \(game.name)…"
         game.statusRawValue = GameStatus.running.rawValue
+        game.lastPlayed = Date()
 
         Task { @MainActor in
-            if game.isNative {
-                launchProgress = "Launching native app…"
-            } else {
-                launchProgress = "Preparing Wine bottle…"
-                try? await Task.sleep(for: .seconds(1))
-                launchProgress = "Starting via GPTK…"
+            do {
+                if game.isNative {
+                    launchProgress = "Launching native app…"
+                    let appURL = URL(fileURLWithPath: game.executablePath)
+                    
+                    // Strongly capture the Game model so it can be updated even if this ViewModel dies
+                    let gameModel = self.game
+                    let onExit: @MainActor (TimeInterval) -> Void = { elapsed in
+                        gameModel.statusRawValue = GameStatus.idle.rawValue
+                        gameModel.totalPlayTime += elapsed
+                    }
+                    
+                    try await processMonitor.launchAndMonitorNativeApp(
+                        gameID: game.id,
+                        appURL: appURL,
+                        onExit: onExit
+                    )
+                    launchProgress = ""
+                    isLaunching = false
+                } else {
+                    launchProgress = "Preparing Wine bottle…"
+                    // TODO: Implement Wine/GPTK bottle creation and process launching.
+                    // For now, mark as launching and wait for process monitor callback.
+                    try? await Task.sleep(for: .seconds(1))
+                    launchProgress = "Starting via GPTK…"
+                    try? await Task.sleep(for: .seconds(1))
+                    launchProgress = ""
+                    isLaunching = false
+                }
+            } catch {
+                launchProgress = "Failed: \(error.localizedDescription)"
+                game.statusRawValue = GameStatus.error.rawValue
+                isLaunching = false
             }
-
-            // In production: actually launch the process
-            try? await Task.sleep(for: .seconds(1))
-            launchProgress = ""
-            isLaunching = false
-            // Note: status would be set back to .idle when the process exits
         }
+    }
+
+    /// Called by `ProcessMonitor` when the game process exits.
+    ///
+    /// Resets game status to idle and accumulates the elapsed play time
+    /// into the game's total play time for statistics.
+    private func handleGameExited(elapsedTime: TimeInterval) {
+        game.statusRawValue = GameStatus.idle.rawValue
+        game.totalPlayTime += elapsedTime
+        launchProgress = ""
+        isLaunching = false
     }
 
     /// Initiates game installation via the platform's CLI tool.

@@ -195,7 +195,13 @@ struct GameDetailView: View {
             VStack(alignment: .leading, spacing: 12) {
                 if let installPath = game.installPath {
                     Button {
-                        NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: installPath)
+                        // Use activateFileViewerSelecting to reveal the item in Finder
+                        // without opening it. selectFile(nil, inFileViewerRootedAtPath:)
+                        // opens .app bundles instead of revealing them because macOS
+                        // treats .app as a launchable package, not a directory.
+                        NSWorkspace.shared.activateFileViewerSelecting(
+                            [URL(fileURLWithPath: installPath)]
+                        )
                     } label: {
                         Label("Open Install Location", systemImage: "folder")
                     }

@@ -26,15 +26,58 @@ struct SommelierApp: App {
                 Game.self,
                 Bottle.self,
             ])
+            
+            let fm = FileManager.default
+            let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            let appDirURL = appSupportURL.appendingPathComponent("Sommelier")
+            
+            if !fm.fileExists(atPath: appDirURL.path) {
+                try? fm.createDirectory(at: appDirURL, withIntermediateDirectories: true)
+            }
+            
+            let oldStoreURL = appSupportURL.appendingPathComponent("Sommelier.store")
+            let newStoreURL = appDirURL.appendingPathComponent("Sommelier.store")
+            
+            if fm.fileExists(atPath: oldStoreURL.path) && !fm.fileExists(atPath: newStoreURL.path) {
+                let extensions = ["", "-shm", "-wal", ".bak"]
+                for ext in extensions {
+                    let oldFileURL = appSupportURL.appendingPathComponent("Sommelier.store\(ext)")
+                    let newFileURL = appDirURL.appendingPathComponent("Sommelier.store\(ext)")
+                    if fm.fileExists(atPath: oldFileURL.path) {
+                        try? fm.moveItem(at: oldFileURL, to: newFileURL)
+                    }
+                }
+            }
+            
             let configuration = ModelConfiguration(
-                "Sommelier",
                 schema: schema,
-                isStoredInMemoryOnly: false
+                url: newStoreURL
             )
             modelContainer = try ModelContainer(
                 for: schema,
                 configurations: [configuration]
             )
+
+            // Reset any stuck running statuses from previous sessions asynchronously
+            let container = modelContainer
+            Task { @MainActor [container] in
+                do {
+                    let context = container.mainContext
+                    let games = try context.fetch(FetchDescriptor<Game>())
+                    var changed = false
+                    for game in games {
+                        if game.statusRawValue == GameStatus.running.rawValue {
+                            game.statusRawValue = GameStatus.idle.rawValue
+                            changed = true
+                        }
+                    }
+                    if changed {
+                        try context.save()
+                    }
+                } catch {
+                    print("Failed to reset stuck game statuses: \(error)")
+                }
+            }
         } catch {
             fatalError("Failed to initialize SwiftData ModelContainer: \(error)")
         }

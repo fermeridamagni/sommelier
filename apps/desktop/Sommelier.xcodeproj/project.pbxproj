@@ -11,8 +11,10 @@
 		0B940B2B4992FEBA6F5C0232 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76E6B930C749BEB71EEF629 /* AuthManager.swift */; };
 		0C9FF7ACC4FD06E3917408FE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23F90D4F6774325CCB3DFEC /* Platform.swift */; };
 		0D8CB5A15782F267E5718B45 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C7498AEB6F8987D8363B12 /* SettingsView.swift */; };
+		0F6F40A81DDA717BDFF1D784 /* LibraryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF336677534EB517E86C7C15 /* LibraryViewModelTests.swift */; };
 		116F858A834FCAED5AD25D62 /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56A0AC3728A3BB6AC5F8D57 /* GameCardView.swift */; };
 		197ADEA87080B7C79B8E2F18 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4D63D1C355BD406CCAF0F5 /* HomeView.swift */; };
+		1FE369608666D88214CC44E5 /* ProcessRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF174D93557F43C00465557 /* ProcessRunnerTests.swift */; };
 		25BBEAE39C6F979BE8F172D6 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42A2B785D34119F8C4D21D1 /* LibraryView.swift */; };
 		2C92A3ED57E940CE5106C138 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D78999164BE6B41B6DDD73 /* AppSettings.swift */; };
 		3A4AD76A641A9A83FE8EA042 /* PlatformIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135FC69E26BC3DA8855ED33C /* PlatformIcon.swift */; };
@@ -20,23 +22,38 @@
 		4491AACBC48A06E2C717BF0D /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAF4DC1268B32159BBC000B /* MainView.swift */; };
 		50EA5B827EEEA50D406E6AC6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9219B519149DD54B77AD4AD /* OnboardingView.swift */; };
 		5709A1758FB2D134166CB265 /* LibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A781EA2119354894E8E9663D /* LibraryManager.swift */; };
+		5A63B495D6D18B428F5F767E /* AuthManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C092686B86AAFD83FCB71AB6 /* AuthManagerTests.swift */; };
 		60FFBECFD6732F8F89D78180 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */; };
 		80BEE3005E2D6CAC29457233 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BCB73F46D1BF8D667432995 /* APIManager.swift */; };
 		8B14FB369513015E46D22D0C /* ProcessRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */; };
 		95531D3DBAB6F5DA2347CC19 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDECBAB21080D149FCF6FB4 /* LibraryViewModel.swift */; };
 		AA2098DAA47FC5F7F997D49B /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB7E6C1C9CE18378ACFD60AC /* HomeViewModel.swift */; };
+		B81DC080772A118BC5F18A05 /* MockProcessRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81D5C7C2E30F18F54DEB32D /* MockProcessRunner.swift */; };
+		BD7C40983ECA55F4DDA8240F /* ProcessMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72087CF920A03CFFD3ABD548 /* ProcessMonitor.swift */; };
 		C9EFA2EC7EBA165B7047A867 /* Bottle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A9CA85E26F46911205D0B /* Bottle.swift */; };
 		D77F754220F81E6F60746165 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD75BDD87C88C6340DAA8C5 /* OnboardingViewModel.swift */; };
 		E06625A4C6C0557D0B0D02D7 /* WineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */; };
 		E612DE452FD2BD4C9E1C9D0D /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480C1A96169CAA617D09A80C /* SidebarView.swift */; };
+		E81744DD350BEE4E51AE7A18 /* GameDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D7EEFF2890443D01C2A442 /* GameDetailViewModelTests.swift */; };
 		EDB80BBA85C08587C7DA6705 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589F2111002C800807131D68 /* Game.swift */; };
 		F2C291397EC1F45837675F11 /* StatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAD844C586331059D3773B5 /* StatusBadge.swift */; };
 		F50428B4B87F8E1F49BFE868 /* SommelierApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7744EB66327760FE945FD4E3 /* SommelierApp.swift */; };
 		F7913E3DAB161D809EDA917A /* GameDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CE9FB13E7CAC7898DF9FED /* GameDetailViewModel.swift */; };
 		F7967D64E1F7CEFE76158373 /* SystemInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */; };
+		F832DC2407DDAE19431B9A64 /* LibraryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4E429684A443B97BECBE28 /* LibraryManagerTests.swift */; };
 		F857F66D19B326A7AB066A14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120EBB0EB6C8F699919A6DA4 /* Assets.xcassets */; };
 		FF3AE787D1037B1064F496C0 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91AC3519F078E30257DC027 /* AuthViewModel.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		930B3118778FAC4DF6381B3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 346E4172F62DC097D5A1935E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43C734F93C834107C06F4EFF;
+			remoteInfo = Sommelier;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0C337D0E8994B578BFEE8B06 /* Sommelier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sommelier.entitlements; sourceTree = "<group>"; };
@@ -45,27 +62,35 @@
 		13CE9FB13E7CAC7898DF9FED /* GameDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailViewModel.swift; sourceTree = "<group>"; };
 		18B96C724BD952CBF52CCB4E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfoService.swift; sourceTree = "<group>"; };
+		1F4E429684A443B97BECBE28 /* LibraryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManagerTests.swift; sourceTree = "<group>"; };
 		33D78999164BE6B41B6DDD73 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		35D7EEFF2890443D01C2A442 /* GameDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailViewModelTests.swift; sourceTree = "<group>"; };
 		480C1A96169CAA617D09A80C /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		4AAD844C586331059D3773B5 /* StatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadge.swift; sourceTree = "<group>"; };
 		589F2111002C800807131D68 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		5BCB73F46D1BF8D667432995 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		5C4D63D1C355BD406CCAF0F5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRunner.swift; sourceTree = "<group>"; };
+		72087CF920A03CFFD3ABD548 /* ProcessMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessMonitor.swift; sourceTree = "<group>"; };
 		7744EB66327760FE945FD4E3 /* SommelierApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SommelierApp.swift; sourceTree = "<group>"; };
 		7AC78A21F2B2861669CFC5C2 /* Sommelier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sommelier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		8D4A9CA85E26F46911205D0B /* Bottle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bottle.swift; sourceTree = "<group>"; };
 		8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WineManager.swift; sourceTree = "<group>"; };
+		8F7E25D4613CCCA94A82229B /* SommelierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SommelierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		92C7498AEB6F8987D8363B12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A23F90D4F6774325CCB3DFEC /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		A76E6B930C749BEB71EEF629 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		A781EA2119354894E8E9663D /* LibraryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManager.swift; sourceTree = "<group>"; };
 		A9219B519149DD54B77AD4AD /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AEAF4DC1268B32159BBC000B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		AF336677534EB517E86C7C15 /* LibraryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModelTests.swift; sourceTree = "<group>"; };
 		AFDECBAB21080D149FCF6FB4 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		B91AC3519F078E30257DC027 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		BFF174D93557F43C00465557 /* ProcessRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessRunnerTests.swift; sourceTree = "<group>"; };
+		C092686B86AAFD83FCB71AB6 /* AuthManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManagerTests.swift; sourceTree = "<group>"; };
 		D683D7E6067C98E31A907A36 /* GameDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailView.swift; sourceTree = "<group>"; };
+		D81D5C7C2E30F18F54DEB32D /* MockProcessRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockProcessRunner.swift; sourceTree = "<group>"; };
 		E42A2B785D34119F8C4D21D1 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		E56A0AC3728A3BB6AC5F8D57 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		EAD75BDD87C88C6340DAA8C5 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
@@ -81,6 +106,7 @@
 				A76E6B930C749BEB71EEF629 /* AuthManager.swift */,
 				89B2FDFDED1EA7C21B7E1245 /* KeychainService.swift */,
 				A781EA2119354894E8E9663D /* LibraryManager.swift */,
+				72087CF920A03CFFD3ABD548 /* ProcessMonitor.swift */,
 				63E6EF982CF5BDB9D5F2877A /* ProcessRunner.swift */,
 				1BB2A3DF3E8927E1E85D47D0 /* SystemInfoService.swift */,
 				8D615CB9BC1B36FDBECFBDB9 /* WineManager.swift */,
@@ -92,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				8FF3F1A3FF4A7ECC71AC2D3C /* Sommelier */,
+				8D1DC67D0FB53EE3048939F2 /* SommelierTests */,
 				8B3482D42C3E82358836D7AD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,8 +147,22 @@
 			isa = PBXGroup;
 			children = (
 				7AC78A21F2B2861669CFC5C2 /* Sommelier.app */,
+				8F7E25D4613CCCA94A82229B /* SommelierTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8D1DC67D0FB53EE3048939F2 /* SommelierTests */ = {
+			isa = PBXGroup;
+			children = (
+				C092686B86AAFD83FCB71AB6 /* AuthManagerTests.swift */,
+				35D7EEFF2890443D01C2A442 /* GameDetailViewModelTests.swift */,
+				1F4E429684A443B97BECBE28 /* LibraryManagerTests.swift */,
+				AF336677534EB517E86C7C15 /* LibraryViewModelTests.swift */,
+				BFF174D93557F43C00465557 /* ProcessRunnerTests.swift */,
+				C2A3DDD4805705F8C339C283 /* Mocks */,
+			);
+			path = SommelierTests;
 			sourceTree = "<group>";
 		};
 		8FF3F1A3FF4A7ECC71AC2D3C /* Sommelier */ = {
@@ -198,6 +239,14 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		C2A3DDD4805705F8C339C283 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				D81D5C7C2E30F18F54DEB32D /* MockProcessRunner.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
 		C8DF79969752A99992649B44 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -229,6 +278,24 @@
 			productReference = 7AC78A21F2B2861669CFC5C2 /* Sommelier.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B4210AFCEC714D7A87C1C430 /* SommelierTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C704B99CC1AA9EB2C73F4735 /* Build configuration list for PBXNativeTarget "SommelierTests" */;
+			buildPhases = (
+				523DFEE1BC4950E7333D775D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A79017241A2E85AFB86B406B /* PBXTargetDependency */,
+			);
+			name = SommelierTests;
+			packageProductDependencies = (
+			);
+			productName = SommelierTests;
+			productReference = 8F7E25D4613CCCA94A82229B /* SommelierTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -239,6 +306,10 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					43C734F93C834107C06F4EFF = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					B4210AFCEC714D7A87C1C430 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
@@ -259,6 +330,7 @@
 			projectRoot = "";
 			targets = (
 				43C734F93C834107C06F4EFF /* Sommelier */,
+				B4210AFCEC714D7A87C1C430 /* SommelierTests */,
 			);
 		};
 /* End PBXProject section */
@@ -300,6 +372,7 @@
 				D77F754220F81E6F60746165 /* OnboardingViewModel.swift in Sources */,
 				0C9FF7ACC4FD06E3917408FE /* Platform.swift in Sources */,
 				3A4AD76A641A9A83FE8EA042 /* PlatformIcon.swift in Sources */,
+				BD7C40983ECA55F4DDA8240F /* ProcessMonitor.swift in Sources */,
 				8B14FB369513015E46D22D0C /* ProcessRunner.swift in Sources */,
 				0D8CB5A15782F267E5718B45 /* SettingsView.swift in Sources */,
 				E612DE452FD2BD4C9E1C9D0D /* SidebarView.swift in Sources */,
@@ -310,9 +383,48 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		523DFEE1BC4950E7333D775D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A63B495D6D18B428F5F767E /* AuthManagerTests.swift in Sources */,
+				E81744DD350BEE4E51AE7A18 /* GameDetailViewModelTests.swift in Sources */,
+				F832DC2407DDAE19431B9A64 /* LibraryManagerTests.swift in Sources */,
+				0F6F40A81DDA717BDFF1D784 /* LibraryViewModelTests.swift in Sources */,
+				B81DC080772A118BC5F18A05 /* MockProcessRunner.swift in Sources */,
+				1FE369608666D88214CC44E5 /* ProcessRunnerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A79017241A2E85AFB86B406B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43C734F93C834107C06F4EFF /* Sommelier */;
+			targetProxy = 930B3118778FAC4DF6381B3A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		07B56A19E7315BB0283F1655 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sommelier.tests;
+				PRODUCT_MODULE_NAME = SommelierTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sommelier.app/Contents/MacOS/Sommelier";
+			};
+			name = Debug;
+		};
 		AB55EDDA8ED8BDB44C99A172 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -409,6 +521,24 @@
 			};
 			name = Release;
 		};
+		DAC37316263A3536C634530F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sommelier.tests;
+				PRODUCT_MODULE_NAME = SommelierTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sommelier.app/Contents/MacOS/Sommelier";
+			};
+			name = Release;
+		};
 		FDBE7B657B1C788E32F1EA5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -493,6 +623,15 @@
 			buildConfigurations = (
 				AB7989DF328EA39D54825025 /* Debug */,
 				C1D217E90FCE5E2F2CAB8077 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C704B99CC1AA9EB2C73F4735 /* Build configuration list for PBXNativeTarget "SommelierTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07B56A19E7315BB0283F1655 /* Debug */,
+				DAC37316263A3536C634530F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

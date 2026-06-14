@@ -82,7 +82,8 @@ struct GameCardView: View {
 
     // MARK: - Cover Image
 
-    /// Loads the cover image from the game's file path, or shows a gradient placeholder.
+    /// Loads the cover image from the game's file path, shows the native app icon
+    /// for macOS apps, or falls back to a gradient placeholder.
     @ViewBuilder
     private var coverImage: some View {
         if let coverPath = game.coverImagePath,
@@ -90,6 +91,27 @@ struct GameCardView: View {
             Image(nsImage: nsImage)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+        } else if game.isNative, !game.executablePath.isEmpty,
+                  FileManager.default.fileExists(atPath: game.executablePath) {
+            // Native macOS app — show the actual app icon centered on a gradient.
+            // NSWorkspace.icon(forFile:) reads the .app bundle's icon catalog
+            // and returns a high-resolution NSImage without manual plist parsing.
+            let appIcon = NSWorkspace.shared.icon(forFile: game.executablePath)
+            LinearGradient(
+                colors: [
+                    Color.accentColor.opacity(0.20),
+                    Color.accentColor.opacity(0.05),
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .overlay {
+                Image(nsImage: appIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 64, height: 64)
+                    .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+            }
         } else {
             // Gradient placeholder with game controller icon
             LinearGradient(

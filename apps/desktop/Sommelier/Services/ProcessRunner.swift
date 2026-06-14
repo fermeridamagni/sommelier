@@ -106,28 +106,24 @@ actor ProcessRunner {
 
         // Bridge the callback-based Process.terminationHandler to async/await.
         return try await withCheckedThrowingContinuation { continuation in
-            // Read stdout and stderr concurrently in a detached task to avoid
-            // pipe buffer deadlocks. Both streams must be drained simultaneously.
             let readTask = Task.detached { [stdoutPipe, stderrPipe] () -> (String, String) in
                 async let stdoutResult: String = {
                     var fullOutput = ""
                     var currentLine = ""
-                    do {
-                        for try await byte in stdoutPipe.fileHandleForReading.bytes {
-                            let char = Character(UnicodeScalar(byte))
-                            currentLine.append(char)
-                            fullOutput.append(char)
-                            
-                            if char == "\n" {
-                                onStdout?(currentLine)
-                                currentLine = ""
-                            } else if currentLine.hasSuffix(": ") || currentLine.hasSuffix("? ") || currentLine.hasSuffix("> ") {
-                                onStdout?(currentLine)
-                                currentLine = ""
+                    while let data = try? stdoutPipe.fileHandleForReading.read(upToCount: 4096), !data.isEmpty {
+                        if let chunk = String(data: data, encoding: .utf8) {
+                            fullOutput += chunk
+                            for char in chunk {
+                                currentLine.append(char)
+                                if char == "\n" {
+                                    onStdout?(currentLine)
+                                    currentLine = ""
+                                } else if currentLine.hasSuffix(": ") || currentLine.hasSuffix("? ") || currentLine.hasSuffix("> ") {
+                                    onStdout?(currentLine)
+                                    currentLine = ""
+                                }
                             }
                         }
-                    } catch {
-                        // Task cancelled or pipe closed
                     }
                     if !currentLine.isEmpty {
                         onStdout?(currentLine)
@@ -138,22 +134,20 @@ actor ProcessRunner {
                 async let stderrResult: String = {
                     var fullOutput = ""
                     var currentLine = ""
-                    do {
-                        for try await byte in stderrPipe.fileHandleForReading.bytes {
-                            let char = Character(UnicodeScalar(byte))
-                            currentLine.append(char)
-                            fullOutput.append(char)
-                            
-                            if char == "\n" {
-                                onStderr?(currentLine)
-                                currentLine = ""
-                            } else if currentLine.hasSuffix(": ") || currentLine.hasSuffix("? ") || currentLine.hasSuffix("> ") {
-                                onStderr?(currentLine)
-                                currentLine = ""
+                    while let data = try? stderrPipe.fileHandleForReading.read(upToCount: 4096), !data.isEmpty {
+                        if let chunk = String(data: data, encoding: .utf8) {
+                            fullOutput += chunk
+                            for char in chunk {
+                                currentLine.append(char)
+                                if char == "\n" {
+                                    onStderr?(currentLine)
+                                    currentLine = ""
+                                } else if currentLine.hasSuffix(": ") || currentLine.hasSuffix("? ") || currentLine.hasSuffix("> ") {
+                                    onStderr?(currentLine)
+                                    currentLine = ""
+                                }
                             }
                         }
-                    } catch {
-                        // Task cancelled or pipe closed
                     }
                     if !currentLine.isEmpty {
                         onStderr?(currentLine)
@@ -161,27 +155,14 @@ actor ProcessRunner {
                     return fullOutput
                 }()
 
-                // Await both concurrently
                 let stdout = await stdoutResult
                 let stderr = await stderrResult
                 return (stdout, stderr)
             }
 
             process.terminationHandler = { terminatedProcess in
-                // Allow read loops to finish naturally to ensure we don't truncate
-                // output (like large JSON payloads) that are still buffered in the pipe.
-                // However, some CLI tools (like Python multiprocessing) spawn child processes
-                // that inherit the pipes and keep them open. We use a 500ms timeout to gracefully
-                // let the buffer drain, and then cancel the read task to prevent hanging.
                 Task {
-                    let timeoutTask = Task {
-                        try? await Task.sleep(nanoseconds: 500_000_000)
-                        readTask.cancel()
-                    }
-                    
                     let (stdout, stderr) = await readTask.value
-                    timeoutTask.cancel()
-                    
                     let result = ProcessResult(
                         exitCode: terminatedProcess.terminationStatus,
                         stdout: stdout,
@@ -193,12 +174,18 @@ actor ProcessRunner {
 
             do {
                 try process.run()
+                // IMPORTANT: Close the parent's write ends of the pipes.
+                // If we don't do this, the read loops will block forever because the pipe remains open
+                // in the parent process even after the child process exits.
+                try? stdoutPipe.fileHandleForWriting.close()
+                try? stderrPipe.fileHandleForWriting.close()
             } catch {
                 readTask.cancel()
                 continuation.resume(
                     throwing: ProcessError.executionFailed(error.localizedDescription)
                 )
             }
+
         }
     }
 

@@ -33,3 +33,41 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_APP_SANDBOX: false
         SWIFT_STRICT_CONCURRENCY: complete
+
+  SommelierTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: SommelierTests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: Sommelier
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_MODULE_NAME: SommelierTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.sommelier.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Sommelier.app/Contents/MacOS/Sommelier"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  Sommelier:
+    build:
+      targets:
+        Sommelier: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SommelierTests
+  SommelierTests:
+    build:
+      targets:
+        Sommelier: all
+        SommelierTests: [test]
+    test:
+      config: Debug
+      targets:
+        - SommelierTests

@@ -20,7 +20,24 @@ struct LibraryView: View {
             platformFilterBar
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
-                .padding(.bottom, 8)
+                .padding(.bottom, 4)
+
+            // Install status filter pills
+            installFilterBar
+                .padding(.horizontal, 24)
+                .padding(.bottom, 4)
+
+            // Result count
+            if !viewModel.isEmpty {
+                HStack {
+                    Text("Showing \(viewModel.filteredGames.count) of \(viewModel.games.count) games")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 4)
+            }
 
             if viewModel.isEmpty {
                 emptyLibraryState
@@ -105,28 +122,71 @@ struct LibraryView: View {
     }
 
     /// Individual filter pill button.
-    private func filterPill(label: String, icon: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func filterPill(label: String, icon: String, isSelected: Bool, count: Int? = nil, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Label(label, systemImage: icon)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .contentShape(Capsule())
-                .background(
-                    isSelected ? Color.accentColor.opacity(0.2) : Color.clear,
-                    in: Capsule()
-                )
-                .overlay(
-                    Capsule()
-                        .strokeBorder(
-                            isSelected ? Color.accentColor : Color.secondary.opacity(0.3),
-                            lineWidth: 1
+            HStack(spacing: 4) {
+                Label(label, systemImage: icon)
+                    .font(.subheadline)
+                    .fontWeight(isSelected ? .semibold : .regular)
+
+                if let count {
+                    Text("\(count)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            isSelected ? Color.accentColor.opacity(0.3) : Color.secondary.opacity(0.15),
+                            in: Capsule()
                         )
-                )
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 6)
+            .contentShape(Capsule())
+            .background(
+                isSelected ? Color.accentColor.opacity(0.2) : Color.clear,
+                in: Capsule()
+            )
+            .overlay(
+                Capsule()
+                    .strokeBorder(
+                        isSelected ? Color.accentColor : Color.secondary.opacity(0.3),
+                        lineWidth: 1
+                    )
+            )
         }
         .buttonStyle(.plain)
         .animation(.spring(response: 0.3), value: isSelected)
+    }
+
+    // MARK: - Install Filter Bar
+
+    /// Second row of filter pills for installed/not-installed status.
+    private var installFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(InstallFilter.allCases) { filter in
+                    filterPill(
+                        label: filter.label,
+                        icon: filter.systemImage,
+                        isSelected: viewModel.selectedInstallFilter == filter,
+                        count: installFilterCount(for: filter)
+                    ) {
+                        viewModel.selectedInstallFilter = filter
+                    }
+                }
+            }
+        }
+    }
+
+    /// Returns the count for each install filter option.
+    private func installFilterCount(for filter: InstallFilter) -> Int? {
+        switch filter {
+        case .all: nil // Don't show count for "All"
+        case .installed: viewModel.installedCount
+        case .notInstalled: viewModel.notInstalledCount
+        }
     }
 
     // MARK: - Game Grid

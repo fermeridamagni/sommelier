@@ -1,6 +1,11 @@
 import AppKit
 import Foundation
+import OSLog
 import SwiftData
+
+/// Logger for library scan operations — helps diagnose why games
+/// from specific platforms fail to appear in the library.
+private let scanLogger = Logger(subsystem: "com.sommelier.app", category: "LibraryManager")
 
 /// Discovers and imports games from all supported platforms into the SwiftData store.
 ///
@@ -103,7 +108,8 @@ final class LibraryManager {
     /// Scans for owned Epic Games using the `legendary` CLI.
     ///
     /// Runs `legendary list-games --json` which outputs a JSON array of game
-    /// objects. Each object contains `app_name`, `app_title`, and install info.
+    /// objects. Each object contains `app_name`, `app_title`, and metadata.
+    /// DLC entries are filtered out by checking `metadata.mainGameItemList`.
     ///
     /// - Returns: An array of `Game` models for discovered Epic games.
     /// - Throws: `ProcessError` if `legendary` is not installed.
@@ -113,28 +119,67 @@ final class LibraryManager {
             arguments: ["list-games", "--json"]
         )
 
-        guard result.exitCode == 0, !result.stdout.isEmpty else { return [] }
+        guard result.exitCode == 0 else {
+            scanLogger.warning("legendary list-games exited with code \(result.exitCode): \(result.stderr)")
+            return []
+        }
 
-        // Parse the JSON output from legendary.
-        guard let data = result.stdout.data(using: .utf8) else { return [] }
+        // Extract only the JSON array part in case there's logging printed to stdout
+        guard let startRange = result.stdout.range(of: "["),
+              let data = String(result.stdout[startRange.lowerBound...]).data(using: .utf8) else {
+            scanLogger.warning("legendary list-games returned empty or invalid output")
+            return []
+        }
 
+        // Decode structure matching actual legendary JSON output.
+        // Top-level keys: app_name, app_title, asset_infos, base_urls, dlcs, metadata
         struct LegendaryGame: Decodable {
             let app_name: String
             let app_title: String?
-            let title: String?
+
+            struct AssetInfo: Decodable {
+                let app_name: String?
+                let build_version: String?
+            }
+
+            /// Platform-keyed asset info (e.g. "Windows", "Mac").
+            let asset_infos: [String: AssetInfo]?
 
             struct Metadata: Decodable {
+                struct Category: Decodable {
+                    let path: String?
+                }
+                struct MainGameItem: Decodable {
+                    let id: String?
+                }
                 struct KeyImage: Decodable {
                     let type: String?
                     let url: String?
                 }
-                let keyImages: [KeyImage]?
-            }
-            let metadata: Metadata?
 
-            /// The display title, preferring `app_title` over `title`.
+                let categories: [Category]?
+                /// Non-empty for DLC items — contains references to the parent game.
+                let mainGameItemList: [MainGameItem]?
+                let keyImages: [KeyImage]?
+                let title: String?
+            }
+
+            let metadata: Metadata?
+            let dlcs: [DLCRef]?
+
+            struct DLCRef: Decodable {
+                let app_name: String?
+            }
+
+            /// Whether this item is a DLC (has a parent game reference).
+            var isDLC: Bool {
+                guard let mainGameItems = metadata?.mainGameItemList else { return false }
+                return !mainGameItems.isEmpty
+            }
+
+            /// The display title, preferring `app_title` over metadata title.
             var displayTitle: String {
-                app_title ?? title ?? app_name
+                app_title ?? metadata?.title ?? app_name
             }
         }
 
@@ -142,18 +187,23 @@ final class LibraryManager {
         do {
             legendaryGames = try JSONDecoder().decode([LegendaryGame].self, from: data)
         } catch {
+            scanLogger.error("Failed to decode legendary JSON: \(String(describing: error))")
             return []
         }
 
-        return legendaryGames.map { lg in
-            Game(
-                name: lg.displayTitle,
-                platform: .epic,
-                executablePath: "",
-                epicAppName: lg.app_name,
-                isInstalled: false
-            )
-        }
+        scanLogger.info("Legendary returned \(legendaryGames.count) items")
+
+        return legendaryGames
+            .filter { !$0.isDLC } // Exclude DLC entries from the library
+            .map { lg in
+                Game(
+                    name: lg.displayTitle,
+                    platform: .epic,
+                    executablePath: "",
+                    epicAppName: lg.app_name,
+                    isInstalled: false
+                )
+            }
     }
 
     // MARK: - Steam (Web API)
@@ -339,22 +389,5 @@ final class LibraryManager {
         }
 
         return games
-    }
-
-    // MARK: - Native App Launching
-
-    /// Opens a native macOS application bundle.
-    ///
-    /// Uses `NSWorkspace` which is the correct macOS API for launching apps
-    /// (handles Launch Services registration, activation, etc.).
-    ///
-    /// - Parameter path: Absolute path to the `.app` bundle.
-    /// - Throws: An error if the app cannot be opened.
-    func launchNativeApp(at path: String) throws {
-        let url = URL(fileURLWithPath: path)
-        let configuration = NSWorkspace.OpenConfiguration()
-        // NSWorkspace.open is async but we fire-and-forget here
-        // because the app launch is managed by the system.
-        NSWorkspace.shared.openApplication(at: url, configuration: configuration)
     }
 }

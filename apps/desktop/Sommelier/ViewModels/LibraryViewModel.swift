@@ -34,6 +34,40 @@ enum SortOrder: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - InstallFilter
+
+/// Filters games by installation status in the library grid.
+enum InstallFilter: String, CaseIterable, Identifiable {
+    /// Show all games regardless of installation status.
+    case all
+
+    /// Show only games that are currently installed on disk.
+    case installed
+
+    /// Show only games that are not installed (available for download).
+    case notInstalled
+
+    var id: String { rawValue }
+
+    /// Human-readable label for the filter pill.
+    var label: String {
+        switch self {
+        case .all: "All"
+        case .installed: "Installed"
+        case .notInstalled: "Not Installed"
+        }
+    }
+
+    /// SF Symbol for the filter pill.
+    var systemImage: String {
+        switch self {
+        case .all: "square.grid.2x2"
+        case .installed: "checkmark.circle"
+        case .notInstalled: "arrow.down.circle"
+        }
+    }
+}
+
 // MARK: - LibraryViewModel
 
 /// Manages the game library grid view — loading, filtering, sorting,
@@ -57,18 +91,31 @@ final class LibraryViewModel {
     /// How games are sorted in the grid.
     var sortOrder: SortOrder = .name
 
+    /// Installation status filter — `.all` by default.
+    var selectedInstallFilter: InstallFilter = .all
+
     /// Whether a library scan is currently in progress.
     var isScanning: Bool = false
 
     // MARK: - Computed Properties
 
-    /// Games filtered by search text and platform, then sorted.
+    /// Games filtered by search text, platform, and install status, then sorted.
     var filteredGames: [Game] {
         var result = games
 
         // Platform filter
         if let platform = selectedPlatform {
             result = result.filter { $0.platformRawValue == platform.rawValue }
+        }
+
+        // Install status filter
+        switch selectedInstallFilter {
+        case .all:
+            break
+        case .installed:
+            result = result.filter { $0.isInstalled }
+        case .notInstalled:
+            result = result.filter { !$0.isInstalled }
         }
 
         // Search filter (case-insensitive)
@@ -90,6 +137,16 @@ final class LibraryViewModel {
         }
 
         return result
+    }
+
+    /// Number of installed games (for badge display).
+    var installedCount: Int {
+        games.filter { $0.isInstalled }.count
+    }
+
+    /// Number of not-installed games (for badge display).
+    var notInstalledCount: Int {
+        games.filter { !$0.isInstalled }.count
     }
 
     /// Whether the library is empty (no games at all, not just filtered).
