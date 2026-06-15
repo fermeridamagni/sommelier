@@ -212,39 +212,32 @@ struct LoginView: View {
 
     // MARK: - Steam Login Sheet
 
-    /// Modal sheet for entering Steam credentials.
+    /// Modal sheet for Steam web authentication.
     private var steamLoginSheet: some View {
-        VStack(spacing: 20) {
-            Text("Steam Login")
-                .font(.title2)
-                .fontWeight(.semibold)
-
-            Text("Enter your Steam username to authenticate via SteamCMD.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            TextField("Steam Username", text: $viewModel.steamUsername)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 280)
-
-            HStack(spacing: 12) {
-                Button("Cancel") {
-                    viewModel.showingSteamPrompt = false
+        VStack(spacing: 0) {
+            ZStack {
+                Text("Sign in to Steam")
+                    .font(.headline)
+                HStack {
+                    Spacer()
+                    Button(action: { viewModel.showingSteamPrompt = false }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                            .imageScale(.large)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-
-                Button("Login") {
-                    viewModel.showingSteamPrompt = false
-                    viewModel.loginSteam()
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color.accentColor)
-                .disabled(viewModel.steamUsername.isEmpty)
+            }
+            .padding()
+            .background(Color(NSColor.windowBackgroundColor))
+            
+            SteamLoginWebView(url: viewModel.steamLoginURL) { steamID, apiKey in
+                viewModel.submitSteamCredentials(steamID: steamID, apiKey: apiKey)
+            } onCancel: {
+                viewModel.showingSteamPrompt = false
             }
         }
-        .padding(32)
-        .frame(width: 380, height: 260)
+        .frame(width: 480, height: 650)
     }
 }
 
@@ -354,6 +347,107 @@ struct LoginWebView: NSViewRepresentable {
             }
             
             decisionHandler(.allow)
+        }
+    }
+}
+
+// MARK: - SteamLoginWebView
+struct SteamLoginWebView: NSViewRepresentable {
+    let url: URL
+    
+    /// Callback invoked when Steam ID and Web API Key are successfully extracted.
+    let onSuccess: (String, String) -> Void
+    
+    /// Callback invoked if the user manually cancels or an error occurs.
+    let onCancel: () -> Void
+
+    func makeNSView(context: Context) -> WKWebView {
+        let config = WKWebViewConfiguration()
+        // Use a non-persistent data store to ensure a clean login state
+        config.websiteDataStore = .nonPersistent()
+        
+        let webView = WKWebView(frame: .zero, configuration: config)
+        webView.navigationDelegate = context.coordinator
+        
+        // Custom user agent helps ensure we get the standard login page
+        webView.customUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
+        
+        return webView
+    }
+
+    func updateNSView(_ webView: WKWebView, context: Context) {
+        if webView.url == nil {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: SteamLoginWebView
+        private var isExtracting = false
+
+        init(_ parent: SteamLoginWebView) {
+            self.parent = parent
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            guard let url = webView.url else { return }
+            
+            if url.absoluteString.contains("steamcommunity.com") {
+                // Check if user has logged in by checking cookies
+                webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] cookies in
+                    guard let self = self else { return }
+                    
+                    if let secureCookie = cookies.first(where: { $0.name == "steamLoginSecure" }) {
+                        let steamID = secureCookie.value.components(separatedBy: "%7C")[0]
+                        
+                        // If we are on the apikey page, extract the key
+                        if url.absoluteString.contains("dev/apikey") {
+                            guard !self.isExtracting else { return }
+                            self.isExtracting = true
+                            
+                            webView.evaluateJavaScript("document.body.innerText") { result, error in
+                                if let text = result as? String, let range = text.range(of: "Key: ") {
+                                    let key = String(text[range.upperBound...].prefix(32))
+                                    self.parent.onSuccess(steamID, key)
+                                } else {
+                                    // Try to register an API key automatically
+                                    let registerScript = """
+                                        var domainInput = document.getElementById('domain') || document.querySelector('input[name="domain"]');
+                                        var agreeCheckbox = document.getElementById('agreeToTerms') || document.querySelector('input[name="agreeToTerms"]') || document.querySelector('input[type="checkbox"]');
+                                        var submitBtn = document.getElementById('Submit') || document.querySelector('input[type="submit"]');
+                                        if (domainInput && agreeCheckbox) {
+                                            domainInput.value = 'sommelier.app';
+                                            agreeCheckbox.checked = true;
+                                            if (submitBtn) {
+                                                submitBtn.click();
+                                            } else if (domainInput.form) {
+                                                domainInput.form.submit();
+                                            }
+                                        }
+                                    """
+                                    webView.evaluateJavaScript(registerScript) { _, _ in
+                                        // The page will reload after submit, and didFinish will be called again
+                                        self.isExtracting = false
+                                    }
+                                }
+                            }
+                        } else {
+                            // Navigate to the API key page if we aren't there yet
+                            let request = URLRequest(url: URL(string: "https://steamcommunity.com/dev/apikey")!)
+                            webView.load(request)
+                        }
+                    }
+                }
+            }
+        }
+        
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            viewModelLogger.error("Steam webview error: \(error.localizedDescription)")
         }
     }
 }

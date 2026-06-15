@@ -155,24 +155,30 @@ struct SettingsView: View {
             authViewModel.refreshStatuses()
         }
         .sheet(isPresented: $authViewModel.showingSteamPrompt) {
-            VStack(spacing: 20) {
-                Text("Steam Login")
-                    .font(.title2).fontWeight(.semibold)
-                Text("Enter your Steam username to authenticate.")
-                    .font(.subheadline).foregroundStyle(.secondary)
-                TextField("Steam Username", text: $authViewModel.steamUsername)
-                    .textFieldStyle(.roundedBorder).frame(width: 280)
-                HStack(spacing: 12) {
-                    Button("Cancel") { authViewModel.showingSteamPrompt = false }.buttonStyle(.plain)
-                    Button("Login") {
-                        authViewModel.showingSteamPrompt = false
-                        authViewModel.loginSteam()
+            VStack(spacing: 0) {
+                ZStack {
+                    Text("Sign in to Steam")
+                        .font(.headline)
+                    HStack {
+                        Spacer()
+                        Button(action: { authViewModel.showingSteamPrompt = false }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                                .imageScale(.large)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(authViewModel.steamUsername.isEmpty)
+                }
+                .padding()
+                .background(Color(NSColor.windowBackgroundColor))
+                
+                SteamLoginWebView(url: authViewModel.steamLoginURL) { steamID, apiKey in
+                    authViewModel.submitSteamCredentials(steamID: steamID, apiKey: apiKey)
+                } onCancel: {
+                    authViewModel.showingSteamPrompt = false
                 }
             }
-            .padding(32).frame(width: 380, height: 260)
+            .frame(width: 480, height: 650)
         }
         .sheet(isPresented: $authViewModel.showingEpicPrompt) {
             if let url = authViewModel.epicLoginURL {

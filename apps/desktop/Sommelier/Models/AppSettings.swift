@@ -57,6 +57,20 @@ struct AppSettings: Codable, Sendable {
             .path
     }
 
+    /// The default artwork directory path, resolved against the user's home.
+    static var artworkDirectory: URL {
+        let appSupport = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first!
+        let dir = appSupport
+            .appendingPathComponent("Sommelier", isDirectory: true)
+            .appendingPathComponent("Artwork", isDirectory: true)
+        
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
     /// Creates settings with sensible defaults for first-time use.
     init(
         steamGridDBAPIKey: String? = nil,
@@ -95,18 +109,37 @@ struct AppSettings: Codable, Sendable {
     /// - Returns: The loaded `AppSettings`, or a default instance.
     static func load() -> AppSettings {
         let url = fileURL
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            return AppSettings()
+        var settings = AppSettings()
+        
+        if FileManager.default.fileExists(atPath: url.path) {
+            do {
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                settings = try decoder.decode(AppSettings.self, from: data)
+            } catch {
+                // If the file is corrupt, proceed with defaults.
+                // The next save will overwrite the corrupt file.
+            }
         }
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            return try decoder.decode(AppSettings.self, from: data)
-        } catch {
-            // If the file is corrupt, return defaults rather than crashing.
-            // The next save will overwrite the corrupt file.
-            return AppSettings()
+        
+        // Merge with UserDefaults where the UI stores its state
+        let defaults = UserDefaults.standard
+        if let gridKey = defaults.string(forKey: "steamGridDBKey"), !gridKey.isEmpty {
+            settings.steamGridDBAPIKey = gridKey
         }
+        if let webKey = defaults.string(forKey: "steamWebAPIKey"), !webKey.isEmpty {
+            settings.steamWebAPIKey = webKey
+        }
+        if let steamID = defaults.string(forKey: "steamID"), !steamID.isEmpty {
+            settings.steamID = steamID
+        }
+        
+        // Ensure APIManager's Keychain gets synced with the latest GridDB key
+        if let gridKey = settings.steamGridDBAPIKey, !gridKey.isEmpty {
+            try? KeychainService.save(key: KeychainService.Keys.steamGridDBAPIKey, value: gridKey)
+        }
+        
+        return settings
     }
 
     /// Saves the current settings to disk as formatted JSON.

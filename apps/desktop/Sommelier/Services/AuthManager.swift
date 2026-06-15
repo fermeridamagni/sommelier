@@ -138,33 +138,28 @@ final class AuthManager {
         }
     }
 
-    /// Initiates Steam authentication via `steamcmd`.
+    /// Submits Steam credentials obtained from the web view.
     ///
-    /// **Note**: `steamcmd` login is interactive — it prompts for a password
-    /// and potentially a Steam Guard code on stdin. This method starts the
-    /// process but the user must interact with it in a terminal or via
-    /// `ProcessRunner`'s stdin support.
+    /// Saves the `steamID` and `steamWebAPIKey` to `UserDefaults`
+    /// so that `AppSettings.load()` picks them up for the library scanner.
     ///
-    /// - Parameter username: The Steam username to log in with.
-    /// - Throws: `ProcessError` if `steamcmd` is not installed or login fails.
-    func loginSteam(username: String) async throws {
+    /// - Parameters:
+    ///   - steamID: The user's 64-bit Steam ID.
+    ///   - apiKey: The generated Steam Web API Key.
+    func submitSteamCredentials(steamID: String, apiKey: String) async {
         steamStatus = .authenticating
-        do {
-            let result = try await processRunner.run(
-                command: "steamcmd",
-                arguments: ["+login", username, "+quit"]
-            )
-            // steamcmd exits 0 even on auth failure sometimes,
-            // so we check the output for success indicators.
-            if result.stdout.contains("Logged in OK") || result.exitCode == 0 {
-                steamStatus = .authenticated
-            } else {
-                steamStatus = .error("Steam login failed. Check credentials.")
-            }
-        } catch {
-            steamStatus = .error(error.localizedDescription)
-            throw error
-        }
+        
+        let defaults = UserDefaults.standard
+        defaults.set(steamID, forKey: "steamID")
+        defaults.set(apiKey, forKey: "steamWebAPIKey")
+        
+        // Also force a save to the JSON settings so they stay in sync
+        var settings = AppSettings.load()
+        settings.steamID = steamID
+        settings.steamWebAPIKey = apiKey
+        try? settings.save()
+        
+        steamStatus = .authenticated
     }
 
     /// Initiates Amazon Games authentication via the `nile` CLI.
@@ -244,33 +239,16 @@ final class AuthManager {
 
     /// Checks whether Steam credentials exist on this system.
     ///
-    /// Looks for steamcmd's cached credentials directory, which is created
-    /// after a successful login. This avoids running `steamcmd` interactively
-    /// just to check auth status.
+    /// Instead of using `steamcmd`, we simply check if a `steamWebAPIKey`
+    /// and `steamID` are configured in the settings.
     func checkSteamAuth() async {
-        steamStatus = .unknown
-
-        // steamcmd stores session data in ~/Library/Application Support/Steam
-        // or ~/.steam depending on how it was installed.
-        let homeDir = FileManager.default.homeDirectoryForCurrentUser
-        let steamPaths = [
-            homeDir.appendingPathComponent("Library/Application Support/Steam/config/loginusers.vdf"),
-            homeDir.appendingPathComponent(".steam/steam/config/loginusers.vdf"),
-        ]
-
-        for path in steamPaths {
-            if FileManager.default.fileExists(atPath: path.path) {
-                // Verify the file isn't empty — an empty loginusers.vdf
-                // means no accounts are cached.
-                if let content = try? String(contentsOf: path, encoding: .utf8),
-                   content.contains("AccountName") {
-                    steamStatus = .authenticated
-                    return
-                }
-            }
+        let settings = AppSettings.load()
+        if let key = settings.steamWebAPIKey, !key.isEmpty,
+           let id = settings.steamID, !id.isEmpty {
+            steamStatus = .authenticated
+        } else {
+            steamStatus = .notAuthenticated
         }
-
-        steamStatus = .notAuthenticated
     }
 
     /// Checks whether the user is currently authenticated with Amazon Games.

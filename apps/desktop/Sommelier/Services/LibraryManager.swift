@@ -62,19 +62,74 @@ final class LibraryManager {
         isScanning = true
         defer { isScanning = false }
 
-        // Fetch existing games to avoid duplicates.
+        // Fetch existing games to avoid duplicates and update paths.
         let existingGames: [Game]
         do {
             let descriptor = FetchDescriptor<Game>()
             existingGames = (try? context.fetch(descriptor)) ?? []
         }
-        let existingNames = Set(existingGames.map { "\($0.name)_\($0.platformRawValue)" })
+        // Clean up duplicates that might have been created in previous app versions.
+        var bestGames = [String: Game]()
+        for game in existingGames {
+            let key = "\(game.name)_\(game.platformRawValue)"
+            if let existing = bestGames[key] {
+                // Duplicate found. Keep the one with artwork if possible.
+                if existing.coverImagePath == nil && game.coverImagePath != nil {
+                    context.delete(existing)
+                    bestGames[key] = game
+                } else {
+                    context.delete(game)
+                }
+            } else {
+                bestGames[key] = game
+            }
+        }
+        try? context.save()
+        
+        let existingGamesDict = bestGames
 
         // Scan Epic Games.
         scanProgress = "Scanning Epic Games..."
-        if let epicGames = try? await scanEpicGames() {
-            for game in epicGames where !existingNames.contains("\(game.name)_\(game.platformRawValue)") {
-                context.insert(game)
+        let apiManager = APIManager()
+        let artworkDir = AppSettings.artworkDirectory
+
+        if let epicGamesData = try? await scanEpicGames() {
+            for (newGame, imagesToDownload) in epicGamesData {
+                let key = "\(newGame.name)_\(newGame.platformRawValue)"
+                let game = existingGamesDict[key] ?? {
+                    context.insert(newGame)
+                    return newGame
+                }()
+                
+                // Update properties if missing
+                if game.epicAppName == nil {
+                    game.epicAppName = newGame.epicAppName
+                }
+
+                // Download missing artwork
+                if let coverUrl = imagesToDownload["cover"], game.coverImagePath == nil {
+                    let dest = artworkDir.appendingPathComponent("epic_\(game.epicAppName ?? game.id.uuidString)_cover.jpg").path
+                    if FileManager.default.fileExists(atPath: dest) {
+                        game.coverImagePath = dest
+                    } else {
+                        Task { @MainActor in
+                            try? await apiManager.downloadImage(from: coverUrl, to: dest)
+                            game.coverImagePath = dest
+                        }
+                    }
+                }
+
+                if let heroUrl = imagesToDownload["hero"], game.heroImagePath == nil {
+                    let dest = artworkDir.appendingPathComponent("epic_\(game.epicAppName ?? game.id.uuidString)_hero.jpg").path
+                    if FileManager.default.fileExists(atPath: dest) {
+                        game.heroImagePath = dest
+                    } else {
+                        Task { @MainActor in
+                            try? await apiManager.downloadImage(from: heroUrl, to: dest)
+                            game.heroImagePath = dest
+                        }
+                    }
+                }
             }
         }
 
@@ -83,8 +138,15 @@ final class LibraryManager {
         let settings = AppSettings.load()
         if let apiKey = settings.steamWebAPIKey, let steamID = settings.steamID {
             if let steamGames = try? await scanSteamGames(apiKey: apiKey, steamID: steamID) {
-                for game in steamGames where !existingNames.contains("\(game.name)_\(game.platformRawValue)") {
-                    context.insert(game)
+                for newGame in steamGames {
+                    let key = "\(newGame.name)_\(newGame.platformRawValue)"
+                    if let existingGame = existingGamesDict[key] {
+                        if existingGame.iconPath == nil {
+                            existingGame.iconPath = newGame.iconPath
+                        }
+                    } else {
+                        context.insert(newGame)
+                    }
                 }
             }
         }
@@ -92,8 +154,11 @@ final class LibraryManager {
         // Scan Amazon Games.
         scanProgress = "Scanning Amazon Games..."
         if let amazonGames = try? await scanAmazonGames() {
-            for game in amazonGames where !existingNames.contains("\(game.name)_\(game.platformRawValue)") {
-                context.insert(game)
+            for newGame in amazonGames {
+                let key = "\(newGame.name)_\(newGame.platformRawValue)"
+                if existingGamesDict[key] == nil {
+                    context.insert(newGame)
+                }
             }
         }
 
@@ -112,11 +177,11 @@ final class LibraryManager {
     /// DLC entries are filtered out by checking `metadata.mainGameItemList`.
     ///
     /// - Returns: An array of `Game` models for discovered Epic games.
-    /// - Throws: `ProcessError` if `legendary` is not installed.
-    func scanEpicGames() async throws -> [Game] {
+    /// - Throws: `ProcessError` if `legendary` is not installed
+    func scanEpicGames() async throws -> [(Game, [String: String])] {
         let result = try await processRunner.run(
             command: "legendary",
-            arguments: ["list-games", "--json"]
+            arguments: ["list", "--json", "--platform", "all"]
         )
 
         guard result.exitCode == 0 else {
@@ -131,55 +196,59 @@ final class LibraryManager {
             return []
         }
 
-        // Decode structure matching actual legendary JSON output.
-        // Top-level keys: app_name, app_title, asset_infos, base_urls, dlcs, metadata
         struct LegendaryGame: Decodable {
             let app_name: String
             let app_title: String?
 
             struct AssetInfo: Decodable {
-                let app_name: String?
-                let build_version: String?
+                let type: String
+                let url: String?
             }
 
-            /// Platform-keyed asset info (e.g. "Windows", "Mac").
-            let asset_infos: [String: AssetInfo]?
+            struct ReleaseInfo: Decodable {
+                let platform: [String]?
+            }
 
             struct Metadata: Decodable {
-                struct Category: Decodable {
-                    let path: String?
-                }
-                struct MainGameItem: Decodable {
-                    let id: String?
-                }
-                struct KeyImage: Decodable {
-                    let type: String?
-                    let url: String?
-                }
-
-                let categories: [Category]?
-                /// Non-empty for DLC items — contains references to the parent game.
-                let mainGameItemList: [MainGameItem]?
-                let keyImages: [KeyImage]?
                 let title: String?
+                let keyImages: [AssetInfo]?
+                let mainGameItemList: [DLCRef]?
+                let releaseInfo: [ReleaseInfo]?
             }
 
             let metadata: Metadata?
-            let dlcs: [DLCRef]?
+
+            struct AssetInfoEntry: Decodable {
+                let app_name: String?
+            }
+            
+            let asset_infos: [String: AssetInfoEntry]?
 
             struct DLCRef: Decodable {
                 let app_name: String?
             }
 
-            /// Whether this item is a DLC (has a parent game reference).
             var isDLC: Bool {
                 guard let mainGameItems = metadata?.mainGameItemList else { return false }
                 return !mainGameItems.isEmpty
             }
 
-            /// The display title, preferring `app_title` over metadata title.
             var displayTitle: String {
                 app_title ?? metadata?.title ?? app_name
+            }
+
+            var isNativeToMac: Bool {
+                if let assetInfos = asset_infos, assetInfos.keys.contains("Mac") {
+                    return true
+                }
+                if let releaseInfos = metadata?.releaseInfo {
+                    for info in releaseInfos {
+                        if let platforms = info.platform, platforms.contains("Mac") {
+                            return true
+                        }
+                    }
+                }
+                return false
             }
         }
 
@@ -194,15 +263,28 @@ final class LibraryManager {
         scanLogger.info("Legendary returned \(legendaryGames.count) items")
 
         return legendaryGames
-            .filter { !$0.isDLC } // Exclude DLC entries from the library
+            .filter { !$0.isDLC }
             .map { lg in
-                Game(
+                let game = Game(
                     name: lg.displayTitle,
                     platform: .epic,
                     executablePath: "",
+                    isNative: lg.isNativeToMac,
                     epicAppName: lg.app_name,
                     isInstalled: false
                 )
+                
+                var imagesToDownload: [String: String] = [:]
+                if let keyImages = lg.metadata?.keyImages {
+                    if let coverImage = keyImages.first(where: { $0.type == "DieselGameBoxTall" }), let urlStr = coverImage.url {
+                        imagesToDownload["cover"] = urlStr
+                    }
+                    if let heroImage = keyImages.first(where: { $0.type == "DieselGameBox" || $0.type == "OfferImageWide" }), let urlStr = heroImage.url {
+                        imagesToDownload["hero"] = urlStr
+                    }
+                }
+                
+                return (game, imagesToDownload)
             }
     }
 

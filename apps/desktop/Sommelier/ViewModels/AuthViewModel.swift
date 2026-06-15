@@ -39,7 +39,7 @@ final class AuthViewModel {
     var epicLoginURL: URL?
 
     // Steam
-    var steamUsername: String = ""
+    let steamLoginURL = URL(string: "https://steamcommunity.com/login/home/?goto=dev%2Fapikey")!
     var showingSteamPrompt: Bool = false
 
     // Amazon
@@ -96,22 +96,16 @@ final class AuthViewModel {
         }
     }
 
-    /// Initiates Steam login via SteamCMD.
-    ///
-    /// Opens a prompt for credentials if `steamUsername` is empty,
-    /// otherwise proceeds with the stored username.
+    /// Initiates Steam login via the Web View flow.
     func loginSteam() {
-        if steamUsername.isEmpty {
-            showingSteamPrompt = true
-            return
-        }
+        showingSteamPrompt = true
+    }
 
+    /// Submits the extracted Steam credentials from the web view.
+    func submitSteamCredentials(steamID: String, apiKey: String) {
+        showingSteamPrompt = false
         Task { @MainActor in
-            do {
-                try await authManager.loginSteam(username: steamUsername)
-            } catch {
-                errorMessage = "Steam login failed: \(error.localizedDescription)"
-            }
+            await authManager.submitSteamCredentials(steamID: steamID, apiKey: apiKey)
         }
     }
 

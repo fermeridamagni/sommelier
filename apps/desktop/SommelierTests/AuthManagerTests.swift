@@ -43,11 +43,18 @@ struct AuthManagerTests {
         #expect(AuthStatus.error("x").systemImage == "exclamationmark.circle.fill")
     }
 
-    @Test("Steam auth check: no credential files")
+    @Test("Steam auth credentials submission")
     @MainActor
-    func steamNoCredentials() async {
+    func submitSteamCredentials() async {
         let manager = AuthManager()
-        // After init, status is unknown
-        #expect(manager.steamStatus == .unknown)
+        await manager.submitSteamCredentials(steamID: "testID", apiKey: "testKey")
+        
+        #expect(manager.steamStatus == .authenticated)
+        #expect(UserDefaults.standard.string(forKey: "steamID") == "testID")
+        #expect(UserDefaults.standard.string(forKey: "steamWebAPIKey") == "testKey")
+        
+        // Clean up
+        UserDefaults.standard.removeObject(forKey: "steamID")
+        UserDefaults.standard.removeObject(forKey: "steamWebAPIKey")
     }
 }

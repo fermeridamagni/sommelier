@@ -36,7 +36,8 @@ struct LibraryView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 4)
+                .padding(.top, 12)
+                .padding(.bottom, 16)
             }
 
             if viewModel.isEmpty {
@@ -104,14 +105,14 @@ struct LibraryView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 // "All" pill
-                filterPill(label: "All", icon: "square.grid.2x2", isSelected: viewModel.selectedPlatform == nil) {
+                FilterPill(title: "All", systemImage: "square.grid.2x2", isSelected: viewModel.selectedPlatform == nil) {
                     viewModel.selectedPlatform = nil
                 }
 
                 ForEach(Platform.allCases, id: \.self) { platform in
-                    filterPill(
-                        label: platform.displayName,
-                        icon: platform.systemImage,
+                    FilterPill(
+                        title: platform.displayName,
+                        systemImage: platform.systemImage,
                         isSelected: viewModel.selectedPlatform == platform
                     ) {
                         viewModel.selectedPlatform = platform
@@ -121,59 +122,32 @@ struct LibraryView: View {
         }
     }
 
-    /// Individual filter pill button.
-    private func filterPill(label: String, icon: String, isSelected: Bool, count: Int? = nil, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Label(label, systemImage: icon)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .semibold : .regular)
-
-                if let count {
-                    Text("\(count)")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 1)
-                        .background(
-                            isSelected ? Color.accentColor.opacity(0.3) : Color.secondary.opacity(0.15),
-                            in: Capsule()
-                        )
-                }
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 6)
-            .contentShape(Capsule())
-            .background(
-                isSelected ? Color.accentColor.opacity(0.2) : Color.clear,
-                in: Capsule()
-            )
-            .overlay(
-                Capsule()
-                    .strokeBorder(
-                        isSelected ? Color.accentColor : Color.secondary.opacity(0.3),
-                        lineWidth: 1
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-        .animation(.spring(response: 0.3), value: isSelected)
-    }
-
     // MARK: - Install Filter Bar
 
     /// Second row of filter pills for installed/not-installed status.
     private var installFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
+                // "All" pill
+                FilterPill(
+                    title: "All",
+                    systemImage: "square.grid.2x2",
+                    isSelected: viewModel.selectedInstallFilter == .all,
+                    count: installFilterCount(for: .all)
+                ) {
+                    viewModel.selectedInstallFilter = .all
+                }
+
                 ForEach(InstallFilter.allCases) { filter in
-                    filterPill(
-                        label: filter.label,
-                        icon: filter.systemImage,
-                        isSelected: viewModel.selectedInstallFilter == filter,
-                        count: installFilterCount(for: filter)
-                    ) {
-                        viewModel.selectedInstallFilter = filter
+                    if filter != .all {
+                        FilterPill(
+                            title: filter.label,
+                            systemImage: filter.systemImage,
+                            isSelected: viewModel.selectedInstallFilter == filter,
+                            count: installFilterCount(for: filter)
+                        ) {
+                            viewModel.selectedInstallFilter = filter
+                        }
                     }
                 }
             }

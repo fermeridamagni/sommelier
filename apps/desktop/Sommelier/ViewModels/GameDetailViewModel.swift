@@ -141,7 +141,13 @@ final class GameDetailViewModel {
     /// reset the game status to idle.
     func stopGame() {
         launchProgress = "Stopping \(game.name)…"
-        processMonitor.stopGame(gameID: game.id)
+        if game.isNative {
+            processMonitor.stopGame(gameID: game.id)
+        } else {
+            Task {
+                try? await WineManager.shared.terminate(gameID: game.id)
+            }
+        }
     }
 
     /// Fetches high-quality artwork from SteamGridDB or platform APIs.
@@ -195,11 +201,46 @@ final class GameDetailViewModel {
                     isLaunching = false
                 } else {
                     launchProgress = "Preparing Wine bottle…"
-                    // TODO: Implement Wine/GPTK bottle creation and process launching.
-                    // For now, mark as launching and wait for process monitor callback.
-                    try? await Task.sleep(for: .seconds(1))
+                    let wineManager = WineManager.shared
+                    let currentBottle: Bottle
+                    
+                    if let existingBottleID = game.bottleID {
+                        let descriptor = FetchDescriptor<Bottle>(predicate: #Predicate { $0.id == existingBottleID })
+                        if let existingBottle = try? game.modelContext?.fetch(descriptor).first {
+                            currentBottle = existingBottle
+                        } else {
+                            let bottleData = try await wineManager.createBottle(name: game.name, gameID: game.id)
+                            currentBottle = Bottle(id: bottleData.id, name: game.name, path: bottleData.path, wineBinaryPath: bottleData.wineBinaryPath, gameID: game.id)
+                            game.modelContext?.insert(currentBottle)
+                            game.bottleID = currentBottle.id
+                        }
+                    } else {
+                        let bottleData = try await wineManager.createBottle(name: game.name, gameID: game.id)
+                        currentBottle = Bottle(id: bottleData.id, name: game.name, path: bottleData.path, wineBinaryPath: bottleData.wineBinaryPath, gameID: game.id)
+                        game.modelContext?.insert(currentBottle)
+                        game.bottleID = currentBottle.id
+                    }
+                    
+                    self.bottle = currentBottle
+                    
                     launchProgress = "Starting via GPTK…"
-                    try? await Task.sleep(for: .seconds(1))
+                    
+                    let onExit: @Sendable (TimeInterval) -> Void = { [weak self] elapsed in
+                        Task { @MainActor in
+                            self?.handleGameExited(elapsedTime: elapsed)
+                        }
+                    }
+                    
+                    try await wineManager.launch(
+                        gameID: game.id,
+                        executablePath: game.executablePath,
+                        installPath: game.installPath,
+                        bottlePath: currentBottle.path,
+                        wineBinaryPath: currentBottle.wineBinaryPath,
+                        environmentVariables: currentBottle.environmentVariables,
+                        onExit: onExit
+                    )
+                    
                     launchProgress = ""
                     isLaunching = false
                 }

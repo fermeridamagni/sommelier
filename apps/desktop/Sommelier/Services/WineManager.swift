@@ -45,6 +45,9 @@ enum WineError: Error, LocalizedError, Sendable {
 /// `ProcessRunner` and ensures operations are serialized to prevent concurrent
 /// modifications to the same bottle.
 actor WineManager {
+    /// Shared singleton instance.
+    static let shared = WineManager()
+
     /// The process runner used for all Wine subprocess invocations.
     private let processRunner: ProcessRunner
 
@@ -104,7 +107,7 @@ actor WineManager {
     /// - Throws: `WineError.gptkNotFound` if GPTK isn't installed,
     ///   `WineError.bottleCreationFailed` or `WineError.winebootFailed`
     ///   if initialization fails.
-    func createBottle(name: String, for game: Game? = nil) async throws -> Bottle {
+    func createBottle(name: String, gameID: UUID? = nil) async throws -> (id: UUID, path: String, wineBinaryPath: String) {
         // Step 1: Locate wine64.
         guard let wine64Path = await systemInfo.gptkBinaryPath() else {
             throw WineError.gptkNotFound
@@ -140,14 +143,8 @@ actor WineManager {
             throw WineError.winebootFailed(result.stderr)
         }
 
-        // Step 4: Return the configured model.
-        return Bottle(
-            id: bottleID,
-            name: name,
-            path: bottlePath.path,
-            wineBinaryPath: wine64Path,
-            gameID: game?.id
-        )
+        // Step 4: Return the configured model parameters.
+        return (bottleID, bottlePath.path, wine64Path)
     }
 
     /// Launches a game executable inside a Wine bottle.
@@ -157,24 +154,35 @@ actor WineManager {
     /// then spawns `wine64 <exe_path>`.
     ///
     /// - Parameters:
-    ///   - game: The game to launch.
-    ///   - bottle: The Wine bottle to run the game in.
+    ///   - gameID: The UUID of the game.
+    ///   - executablePath: The game executable path.
+    ///   - installPath: The game install path.
+    ///   - bottlePath: The Wine bottle path.
+    ///   - wineBinaryPath: The Wine binary path.
+    ///   - environmentVariables: The bottle environment variables.
+    ///   - onExit: Closure called when the process terminates, returning elapsed time.
     /// - Throws: `WineError.launchFailed` if the Wine process fails to start.
-    func launch(game: Game, bottle: Bottle) async throws {
+    func launch(
+        gameID: UUID,
+        executablePath: String,
+        installPath: String?,
+        bottlePath: String,
+        wineBinaryPath: String,
+        environmentVariables: [String: String],
+        onExit: @escaping @Sendable (TimeInterval) -> Void
+    ) async throws {
         let settings = AppSettings.load()
-        let environment = gptkEnvironment(for: bottle, settings: settings)
+        let environment = gptkEnvironment(bottlePath: bottlePath, envVars: environmentVariables, settings: settings)
 
         // Spawn wine64 with the game's executable path.
         // We track the process so it can be terminated later.
-        let wine64Path = bottle.wineBinaryPath
-
-        guard FileManager.default.fileExists(atPath: wine64Path) else {
+        guard FileManager.default.fileExists(atPath: wineBinaryPath) else {
             throw WineError.gptkNotFound
         }
 
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: wine64Path)
-        process.arguments = [game.executablePath]
+        process.executableURL = URL(fileURLWithPath: wineBinaryPath)
+        process.arguments = [executablePath]
 
         var merged = ProcessInfo.processInfo.environment
         for (key, value) in environment {
@@ -183,7 +191,7 @@ actor WineManager {
         process.environment = merged
 
         // Set working directory to the game's install path if available.
-        if let installPath = game.installPath {
+        if let installPath = installPath {
             process.currentDirectoryURL = URL(fileURLWithPath: installPath)
         }
 
@@ -192,12 +200,25 @@ actor WineManager {
         process.standardOutput = stdoutPipe
         process.standardError = stderrPipe
 
+        let startTime = Date()
+        process.terminationHandler = { [weak self] _ in
+            let elapsed = Date().timeIntervalSince(startTime)
+            Task {
+                await self?.removeProcess(gameID: gameID)
+                onExit(elapsed)
+            }
+        }
+
         do {
             try process.run()
-            runningProcesses[game.id] = process
+            runningProcesses[gameID] = process
         } catch {
             throw WineError.launchFailed(error.localizedDescription)
         }
+    }
+
+    private func removeProcess(gameID: UUID) {
+        runningProcesses.removeValue(forKey: gameID)
     }
 
     /// Terminates a running game process by its game ID.
@@ -221,14 +242,14 @@ actor WineManager {
     /// including any installed games, save data, and registry settings
     /// will be permanently removed.
     ///
-    /// - Parameter bottle: The bottle to delete.
+    /// - Parameter bottlePath: The path to the bottle.
     /// - Throws: `WineError.bottleNotFound` if the directory doesn't exist,
     ///   `WineError.deletionFailed` if removal fails.
-    func deleteBottle(_ bottle: Bottle) async throws {
-        let bottleURL = URL(fileURLWithPath: bottle.path)
+    func deleteBottle(atPath bottlePath: String) async throws {
+        let bottleURL = URL(fileURLWithPath: bottlePath)
 
-        guard FileManager.default.fileExists(atPath: bottle.path) else {
-            throw WineError.bottleNotFound(bottle.path)
+        guard FileManager.default.fileExists(atPath: bottlePath) else {
+            throw WineError.bottleNotFound(bottlePath)
         }
 
         do {
@@ -244,13 +265,14 @@ actor WineManager {
     /// derived from the user's `AppSettings`.
     ///
     /// - Parameters:
-    ///   - bottle: The Wine bottle providing WINEPREFIX and custom vars.
+    ///   - bottlePath: The WINEPREFIX path.
+    ///   - envVars: Custom variables.
     ///   - settings: The user's app settings for runtime toggles.
     /// - Returns: A dictionary of environment variables ready for `Process.environment`.
-    func gptkEnvironment(for bottle: Bottle, settings: AppSettings) -> [String: String] {
+    func gptkEnvironment(bottlePath: String, envVars: [String: String], settings: AppSettings) -> [String: String] {
         var env: [String: String] = [
             // The Wine prefix directory — the most important variable.
-            "WINEPREFIX": bottle.path,
+            "WINEPREFIX": bottlePath,
         ]
 
         // Enable esync for better threading performance (default on).
@@ -266,7 +288,7 @@ actor WineManager {
         // Merge bottle-specific custom environment variables.
         // These take precedence over the standard ones so users
         // can override any setting per-bottle.
-        for (key, value) in bottle.environmentVariables {
+        for (key, value) in envVars {
             env[key] = value
         }
 
